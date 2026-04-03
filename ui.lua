@@ -3,15 +3,15 @@ local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
 local Library = {
+    -- EXACT V5 PALETTE
     MainColor         = Color3.fromRGB(31, 33, 35),
     SidebarColor      = Color3.fromRGB(31, 33, 35),
     SeparatorColor    = Color3.fromRGB(40, 42, 44),
     SectionColor      = Color3.fromRGB(35, 38, 39),
     ToggleOffColor    = Color3.fromRGB(61, 62, 111),
-    ToggleOnColor     = Color3.fromRGB(107, 102, 237), -- Cheeto Blue
+    ToggleOnColor     = Color3.fromRGB(107, 102, 237), -- THE BLUE
     TextActiveColor   = Color3.fromRGB(220, 220, 220),
     TextInactiveColor = Color3.fromRGB(109, 111, 113),
-    DropdownColor     = Color3.fromRGB(31, 33, 37),
     TabSelectedBg     = Color3.fromRGB(40, 42, 44),
     Font              = Enum.Font.GothamMedium,
 }
@@ -35,7 +35,7 @@ function Library:CreateWindow(title)
     })
     Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = Main})
 
-    -- SIDEBAR: Made wider (180) and centered title
+    -- BIGGER SIDEBAR (180px)
     local Sidebar = Create("Frame", {
         Parent = Main,
         Size = UDim2.new(0, 180, 1, 0),
@@ -43,16 +43,7 @@ function Library:CreateWindow(title)
         BorderSizePixel = 0
     })
     
-    -- Vertical Line (Restored)
-    local Divider = Create("Frame", {
-        Parent = Main,
-        Size = UDim2.new(0, 1, 1, 0),
-        Position = UDim2.new(0, 180, 0, 0),
-        BackgroundColor3 = self.SeparatorColor,
-        BorderSizePixel = 0
-    })
-
-    -- Centered and Larger Title
+    -- CENTERED TITLE
     local TitleLabel = Create("TextLabel", {
         Parent = Sidebar,
         Text = "🔥 " .. title,
@@ -80,16 +71,9 @@ function Library:CreateWindow(title)
         BackgroundTransparency = 1
     })
 
-    local TopBar = Create("Frame", {
-        Parent = Content,
-        Size = UDim2.new(1, 0, 0, 50),
-        BackgroundTransparency = 1
-    })
-    
     local PathLabel = Create("TextLabel", {
-        Parent = TopBar,
-        Text = title .. " > ",
-        Size = UDim2.new(1, -50, 1, 0),
+        Parent = Content,
+        Size = UDim2.new(1, -50, 0, 50),
         Position = UDim2.new(0, 15, 0, 0),
         BackgroundTransparency = 1,
         TextColor3 = self.TextInactiveColor,
@@ -99,44 +83,25 @@ function Library:CreateWindow(title)
         RichText = true
     })
 
-    local CollapseBtn = Create("TextButton", {
-        Parent = TopBar,
-        Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(1, -40, 0.5, -15),
-        BackgroundTransparency = 1,
-        Text = ">|",
-        TextColor3 = self.TextInactiveColor,
-        Font = self.Font,
-        TextSize = 16
-    })
-
-    -- Horizontal Line (Restored)
+    -- Vertical Line
     Create("Frame", {
-        Parent = Content,
-        Size = UDim2.new(1, 0, 0, 1),
-        Position = UDim2.new(0, 0, 0, 50),
+        Parent = Main,
+        Size = UDim2.new(0, 1, 1, 0),
+        Position = UDim2.new(0, 180, 0, 0),
         BackgroundColor3 = self.SeparatorColor,
         BorderSizePixel = 0
     })
-
-    local isCollapsed = false
-    CollapseBtn.MouseButton1Click:Connect(function()
-        isCollapsed = not isCollapsed
-        PathLabel.Visible = not isCollapsed -- Deletes pathfinding on hide
-        local targetWidth = isCollapsed and 180 or 620
-        TweenService:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, targetWidth, 0, 420)}):Play()
-    end)
 
     local Window = {Tabs = {}}
 
     function Window:CreateTab(name)
         local TabBtn = Create("TextButton", {
             Parent = TabContainer,
-            Size = UDim2.new(0, 160, 0, 35), -- Larger/Boxier tabs
+            Size = UDim2.new(0, 160, 0, 35),
             BackgroundColor3 = Library.TabSelectedBg,
-            BackgroundTransparency = 1,
+            BackgroundTransparency = 1, -- Starts transparent
             Text = name,
-            TextColor3 = Library.TextInactiveColor,
+            TextColor3 = Library.TextInactiveColor, -- Starts inactive gray
             Font = Library.Font,
             TextSize = 13
         })
@@ -151,23 +116,23 @@ function Library:CreateWindow(title)
             ScrollBarThickness = 0
         })
         Create("UIListLayout", {Parent = Page, Padding = UDim.new(0, 6), HorizontalAlignment = Enum.HorizontalAlignment.Center})
-        Create("UIPadding", {Parent = Page, PaddingTop = UDim.new(0, 15)})
 
         TabBtn.MouseButton1Click:Connect(function()
             for _, v in pairs(Window.Tabs) do
                 v.Page.Visible = false
                 v.Btn.BackgroundTransparency = 1
-                v.Btn.TextColor3 = Library.TextInactiveColor
+                v.Btn.TextColor3 = Library.TextInactiveColor -- Reset others to gray
             end
             Page.Visible = true
-            TabBtn.BackgroundTransparency = 0
-            TabBtn.TextColor3 = Library.ToggleOnColor -- Active Blue Text
+            TabBtn.BackgroundTransparency = 0 -- Show background for active
+            TabBtn.TextColor3 = Library.ToggleOnColor -- CHANGE TEXT TO BLUE
             PathLabel.Text = title .. " > <font color='#6b66ed'>" .. name .. "</font>"
         end)
 
         local Tab = {Page = Page, Btn = TabBtn}
         table.insert(Window.Tabs, Tab)
         
+        -- Default selection
         if #Window.Tabs == 1 then 
             Page.Visible = true
             TabBtn.BackgroundTransparency = 0
@@ -175,7 +140,6 @@ function Library:CreateWindow(title)
             PathLabel.Text = title .. " > <font color='#6b66ed'>" .. name .. "</font>"
         end
 
-        -- TOGGLE: Re-implemented with V5 Blue Accent logic
         function Tab:CreateToggle(text, callback)
             local TFrame = Create("Frame", {
                 Parent = Page,
@@ -185,6 +149,7 @@ function Library:CreateWindow(title)
             })
             Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = TFrame})
 
+            -- BLUE ACCENT LINE (Left side)
             local LeftAccent = Create("Frame", {
                 Parent = TFrame,
                 Size = UDim2.new(0, 2, 1, 0),
@@ -228,18 +193,16 @@ function Library:CreateWindow(title)
                     enabled = not enabled
                     local pos = enabled and UDim2.new(0, 18, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
                     local col = enabled and Library.ToggleOnColor or Library.ToggleOffColor
-                    local textCol = enabled and Library.TextActiveColor or Library.TextInactiveColor
                     
                     TweenService:Create(Ball, TweenInfo.new(0.2), {Position = pos}):Play()
                     TweenService:Create(ToggleBG, TweenInfo.new(0.2), {BackgroundColor3 = col}):Play()
                     TweenService:Create(LeftAccent, TweenInfo.new(0.2), {BackgroundColor3 = col}):Play()
-                    TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = textCol}):Play()
+                    TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = enabled and Library.TextActiveColor or Library.TextInactiveColor}):Play()
                     callback(enabled)
                 end
             end)
         end
 
-        -- DROPDOWN: Implemented with V5 Aesthetic and smooth animation
         function Tab:CreateDropdown(text, options, callback)
             local DFrame = Create("Frame", {
                 Parent = Page,
@@ -250,51 +213,30 @@ function Library:CreateWindow(title)
             })
             Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = DFrame})
 
-            local LeftAccent = Create("Frame", {
+            local DropdownBtn = Create("TextButton", {
                 Parent = DFrame,
-                Size = UDim2.new(0, 2, 0, 38), -- Fixed height for top bar
-                BackgroundColor3 = Library.ToggleOffColor,
-                BorderSizePixel = 0
-            })
-
-            local Label = Create("TextLabel", {
-                Parent = DFrame,
-                Text = text,
-                Size = UDim2.new(0, 200, 0, 38),
-                Position = UDim2.new(0, 15, 0, 0),
+                Text = text .. " : Select...",
+                Size = UDim2.new(1, 0, 0, 38),
                 BackgroundTransparency = 1,
                 TextColor3 = Library.TextInactiveColor,
                 Font = Library.Font,
                 TextSize = 13,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
-
-            local DropdownMain = Create("TextButton", {
-                Parent = DFrame,
-                Text = "Select...",
-                Size = UDim2.new(0, 120, 0, 24),
-                Position = UDim2.new(1, -135, 0, 7),
-                BackgroundColor3 = Library.DropdownColor,
-                TextColor3 = Library.TextActiveColor,
-                Font = Library.Font,
-                TextSize = 12,
-                BorderSizePixel = 0
-            })
-            Create("UICorner", {CornerRadius = UDim.new(0, 3), Parent = DropdownMain})
+            Create("UIPadding", {Parent = DropdownBtn, PaddingLeft = UDim.new(0, 15)})
 
             local OptionContainer = Create("Frame", {
                 Parent = DFrame,
                 Position = UDim2.new(0, 0, 0, 38),
-                Size = UDim2.new(1, 0, 0, 0),
+                Size = UDim2.new(1, 0, 0, #options * 25),
                 BackgroundTransparency = 1
             })
             Create("UIListLayout", {Parent = OptionContainer})
 
             local open = false
-            DropdownMain.MouseButton1Click:Connect(function()
+            DropdownBtn.MouseButton1Click:Connect(function()
                 open = not open
-                local targetSize = open and (38 + (#options * 25) + 5) or 38
-                TweenService:Create(DFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(1, -30, 0, targetSize)}):Play()
+                TweenService:Create(DFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, -30, 0, open and (38 + #options * 25) or 38)}):Play()
             end)
 
             for _, opt in pairs(options) do
@@ -308,9 +250,7 @@ function Library:CreateWindow(title)
                     TextSize = 12
                 })
                 OptBtn.MouseButton1Click:Connect(function()
-                    DropdownMain.Text = opt
-                    Label.TextColor3 = Library.TextActiveColor
-                    TweenService:Create(LeftAccent, TweenInfo.new(0.2), {BackgroundColor3 = Library.ToggleOnColor}):Play()
+                    DropdownBtn.Text = text .. " : " .. opt
                     callback(opt)
                     open = false
                     TweenService:Create(DFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, -30, 0, 38)}):Play()
