@@ -9,10 +9,10 @@ local Library = {
     SectionColor      = Color3.fromRGB(35, 38, 39),
     ToggleOffColor    = Color3.fromRGB(61, 62, 111),
     ToggleOnColor     = Color3.fromRGB(107, 102, 237),
-    TextActiveColor   = Color3.fromRGB(220, 220, 220), -- Normal text color when active
+    TextActiveColor   = Color3.fromRGB(255, 255, 255), -- Normal white text when active
     TextInactiveColor = Color3.fromRGB(75, 78, 80),   -- Faded color
     DropdownColor     = Color3.fromRGB(31, 33, 37),   -- #1f2125
-    TabSelectedBg     = Color3.fromRGB(40, 42, 44),
+    TabSelectedBg     = Color3.fromRGB(40, 42, 44),   -- #282a2c
     Font              = Enum.Font.GothamMedium,
 }
 
@@ -32,7 +32,7 @@ function Library:CreateWindow(title)
         BorderSizePixel = 0,
         ClipsDescendants = true
     })
-    Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = Main}) -- Boxier corners
+    Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = Main})
 
     local Sidebar = Create("Frame", {
         Parent = Main,
@@ -41,7 +41,7 @@ function Library:CreateWindow(title)
         BorderSizePixel = 0
     })
     
-    -- Centered and larger title
+    -- Title: Centered and Larger
     local TitleLabel = Create("TextLabel", {
         Parent = Sidebar,
         Text = title,
@@ -49,7 +49,7 @@ function Library:CreateWindow(title)
         BackgroundTransparency = 1,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         Font = Enum.Font.GothamBold,
-        TextSize = 18,
+        TextSize = 20,
         TextXAlignment = Enum.TextXAlignment.Center
     })
 
@@ -98,7 +98,8 @@ function Library:CreateWindow(title)
         TextSize = 16
     })
 
-    local TopDivider = Create("Frame", {
+    -- Top Separator
+    Create("Frame", {
         Parent = Content,
         Size = UDim2.new(1, 0, 0, 1),
         Position = UDim2.new(0, 0, 0, 50),
@@ -110,8 +111,8 @@ function Library:CreateWindow(title)
     CollapseBtn.MouseButton1Click:Connect(function()
         isCollapsed = not isCollapsed
         local targetWidth = isCollapsed and 180 or 620
-        PathLabel.Visible = not isCollapsed -- Deletes/hides pathfinding when collapsed
-        TweenService:Create(Main, TweenInfo.new(0.3), {Size = UDim2.new(0, targetWidth, 0, 420)}):Play()
+        PathLabel.Visible = not isCollapsed -- Hide pathfinding on collapse
+        TweenService:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, targetWidth, 0, 420)}):Play()
     end)
 
     local Window = {Tabs = {}}
@@ -127,7 +128,7 @@ function Library:CreateWindow(title)
             Font = Library.Font,
             TextSize = 14
         })
-        Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = TabBtn}) -- Boxier tab highlight
+        Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = TabBtn}) -- Boxy selection
 
         local Page = Create("ScrollingFrame", {
             Parent = Content,
@@ -143,20 +144,24 @@ function Library:CreateWindow(title)
             for _, v in pairs(Window.Tabs) do
                 v.Page.Visible = false
                 v.Btn.BackgroundTransparency = 1
+                v.Btn.TextColor3 = Library.TextInactiveColor
             end
             Page.Visible = true
             TabBtn.BackgroundTransparency = 0
+            TabBtn.TextColor3 = Library.TextActiveColor
             PathLabel.Text = title .. " > " .. name
         end)
 
         local Tab = {Page = Page, Btn = TabBtn}
         table.insert(Window.Tabs, Tab)
+        if #Window.Tabs == 1 then Page.Visible = true TabBtn.BackgroundTransparency = 0 end
 
         function Tab:CreateDropdown(text, options, callback)
             local DFrame = Create("Frame", {
                 Parent = Page,
                 Size = UDim2.new(1, -30, 0, 38),
                 BackgroundColor3 = Library.SectionColor,
+                BorderSizePixel = 0,
                 ClipsDescendants = true
             })
             Create("UICorner", {CornerRadius = UDim.new(0, 2), Parent = DFrame})
@@ -196,7 +201,7 @@ function Library:CreateWindow(title)
             local open = false
             DropdownMain.MouseButton1Click:Connect(function()
                 open = not open
-                local targetSize = open and (38 + (#options * 25)) or 38
+                local targetSize = open and (38 + (#options * 25) + 5) or 38
                 TweenService:Create(DFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(1, -30, 0, targetSize)}):Play()
             end)
 
@@ -212,7 +217,7 @@ function Library:CreateWindow(title)
                 })
                 OptBtn.MouseButton1Click:Connect(function()
                     DropdownMain.Text = opt
-                    Label.TextColor3 = Library.TextActiveColor -- Fades in when chosen
+                    Label.TextColor3 = Library.TextActiveColor -- Fades to white when chosen
                     callback(opt)
                     open = false
                     TweenService:Create(DFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, -30, 0, 38)}):Play()
