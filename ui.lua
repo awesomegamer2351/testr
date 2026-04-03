@@ -1,15 +1,13 @@
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
 local Library = {
     MainColor         = Color3.fromRGB(31, 33, 35),
     SidebarColor      = Color3.fromRGB(31, 33, 35),
-    SeparatorColor    = Color3.fromRGB(40, 42, 44),
+    SeparatorColor    = Color3.fromRGB(45, 45, 45),
     SectionColor      = Color3.fromRGB(35, 38, 39),
     ToggleOffColor    = Color3.fromRGB(61, 62, 111),
-    ToggleOnColor     = Color3.fromRGB(107, 102, 237), -- Blue Highlight
-    TextActiveColor   = Color3.fromRGB(220, 220, 220),
+    ToggleOnColor     = Color3.fromRGB(107, 102, 237),
     TextInactiveColor = Color3.fromRGB(109, 111, 113),
     TabSelectedBg     = Color3.fromRGB(40, 42, 44),
     Font              = Enum.Font.GothamMedium,
@@ -37,17 +35,18 @@ function Library:CreateWindow(title)
         Parent = Main,
         Size = UDim2.new(0, 180, 1, 0),
         BackgroundColor3 = self.SidebarColor,
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        ZIndex = 2
     })
     
     local TitleLabel = Create("TextLabel", {
         Parent = Sidebar,
-        Text = title,
+        Text = "🔥 " .. title,
         Size = UDim2.new(1, 0, 0, 60),
         BackgroundTransparency = 1,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         Font = Enum.Font.GothamBold,
-        TextSize = 18,
+        TextSize = 17,
         TextXAlignment = Enum.TextXAlignment.Center
     })
 
@@ -67,6 +66,7 @@ function Library:CreateWindow(title)
         BackgroundTransparency = 1
     })
 
+    -- TOP PATH AREA
     local PathLabel = Create("TextLabel", {
         Parent = Content,
         Size = UDim2.new(1, -50, 0, 50),
@@ -76,10 +76,31 @@ function Library:CreateWindow(title)
         Font = self.Font,
         TextSize = 13,
         TextXAlignment = Enum.TextXAlignment.Left,
-        RichText = true
+        Text = title .. " > "
     })
 
-    -- Vertical Splitter
+    -- COLLAPSE BUTTON
+    local CollapseBtn = Create("TextButton", {
+        Parent = Content,
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -40, 0, 10),
+        BackgroundTransparency = 1,
+        Text = ">|",
+        TextColor3 = self.TextInactiveColor,
+        Font = self.Font,
+        TextSize = 16
+    })
+
+    -- TOP HORIZONTAL SEPARATOR
+    Create("Frame", {
+        Parent = Content,
+        Size = UDim2.new(1, -30, 0, 1),
+        Position = UDim2.new(0, 15, 0, 50),
+        BackgroundColor3 = self.SeparatorColor,
+        BorderSizePixel = 0
+    })
+
+    -- VERTICAL SIDEBAR SEPARATOR
     Create("Frame", {
         Parent = Main,
         Size = UDim2.new(0, 1, 1, 0),
@@ -115,14 +136,13 @@ function Library:CreateWindow(title)
             for _, v in pairs(Window.Tabs) do
                 v.Page.Visible = false
                 v.Btn.TextColor3 = Library.TextInactiveColor
-                v.Btn.BackgroundColor3 = Library.SidebarColor
                 v.Btn.BackgroundTransparency = 1
             end
             Page.Visible = true
             TabBtn.TextColor3 = Library.ToggleOnColor
             TabBtn.BackgroundColor3 = Library.TabSelectedBg
             TabBtn.BackgroundTransparency = 0
-            PathLabel.Text = title .. " > <font color='#6b66ed'>" .. name .. "</font>"
+            PathLabel.Text = title .. " > " .. name
         end)
 
         local Tab = {Page = Page, Btn = TabBtn}
@@ -133,10 +153,9 @@ function Library:CreateWindow(title)
             TabBtn.TextColor3 = Library.ToggleOnColor
             TabBtn.BackgroundTransparency = 0
             TabBtn.BackgroundColor3 = Library.TabSelectedBg
-            PathLabel.Text = title .. " > <font color='#6b66ed'>" .. name .. "</font>"
+            PathLabel.Text = title .. " > " .. name
         end
 
-        -- TOGGLE FUNCTION
         function Tab:CreateToggle(text, callback)
             local TFrame = Create("Frame", {
                 Parent = Page,
@@ -187,18 +206,14 @@ function Library:CreateWindow(title)
             TFrame.InputBegan:Connect(function(io)
                 if io.UserInputType == Enum.UserInputType.MouseButton1 then
                     enabled = not enabled
-                    local targetPos = enabled and UDim2.new(0, 20, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
-                    local targetCol = enabled and Library.ToggleOnColor or Library.ToggleOffColor
-                    
-                    TweenService:Create(Ball, TweenInfo.new(0.15), {Position = targetPos}):Play()
-                    TweenService:Create(ToggleSwitch, TweenInfo.new(0.15), {BackgroundColor3 = targetCol}):Play()
-                    TweenService:Create(Accent, TweenInfo.new(0.15), {BackgroundColor3 = targetCol}):Play()
+                    TweenService:Create(Ball, TweenInfo.new(0.15), {Position = enabled and UDim2.new(0, 20, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)}):Play()
+                    TweenService:Create(ToggleSwitch, TweenInfo.new(0.15), {BackgroundColor3 = enabled and Library.ToggleOnColor or Library.ToggleOffColor}):Play()
+                    TweenService:Create(Accent, TweenInfo.new(0.15), {BackgroundColor3 = enabled and Library.ToggleOnColor or Library.ToggleOffColor}):Play()
                     callback(enabled)
                 end
             end)
         end
 
-        -- UPDATED DROPDOWN (Matches Toggle UI style)
         function Tab:CreateDropdown(text, options, callback)
             local DFrame = Create("Frame", {
                 Parent = Page,
@@ -211,7 +226,7 @@ function Library:CreateWindow(title)
             local Label = Create("TextLabel", {
                 Parent = DFrame,
                 Text = text,
-                Size = UDim2.new(0.6, 0, 1, 0),
+                Size = UDim2.new(0.5, 0, 1, 0),
                 Position = UDim2.new(0, 15, 0, 0),
                 BackgroundTransparency = 1,
                 TextColor3 = Library.TextInactiveColor,
@@ -220,10 +235,11 @@ function Library:CreateWindow(title)
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
+            -- BUTTON PUSHED TO THE FAR RIGHT
             local DropBtn = Create("TextButton", {
                 Parent = DFrame,
-                Size = UDim2.new(0, 120, 0, 26),
-                Position = UDim2.new(1, -135, 0.5, -13),
+                Size = UDim2.new(0, 100, 0, 26),
+                Position = UDim2.new(1, -115, 0.5, -13),
                 BackgroundColor3 = Color3.fromRGB(30, 30, 30),
                 TextColor3 = Library.TextInactiveColor,
                 Text = "Select...",
@@ -232,13 +248,11 @@ function Library:CreateWindow(title)
             })
             Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = DropBtn})
 
-            -- Logic for selection
             local currentIdx = 1
             DropBtn.MouseButton1Click:Connect(function()
                 currentIdx = (currentIdx % #options) + 1
-                local selected = options[currentIdx]
-                DropBtn.Text = selected
-                callback(selected)
+                DropBtn.Text = options[currentIdx]
+                callback(options[currentIdx])
             end)
         end
 
