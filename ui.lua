@@ -1283,7 +1283,7 @@ function Library:CreateWindow(title)
             return BFrame
         end
 
-        -- ========== COLOR PICKER ==========
+        -- ========== COLOR PICKER (No title, no arrow, improved gradient) ==========
         function Tab:CreateColorPicker(text, defaultColor, callback, desc, configId)
             local currentColor = defaultColor or Color3.fromRGB(255, 255, 255)
             local h, s, v = Color3ToHSV(currentColor)
@@ -1312,7 +1312,7 @@ function Library:CreateWindow(title)
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
-            -- Color preview button
+            -- Color preview button (no arrow)
             local PreviewBtn = Create("TextButton", {
                 Parent = CFrame,
                 Size = UDim2.new(0, 30, 0, 30),
@@ -1324,19 +1324,6 @@ function Library:CreateWindow(title)
                 ZIndex = 3
             })
             Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = PreviewBtn})
-
-            local Arrow = Create("TextLabel", {
-                Parent = CFrame,
-                Text = "▼",
-                Size = UDim2.new(0, 20, 1, 0),
-                Position = UDim2.new(1, -22, 0, 0),
-                BackgroundTransparency = 1,
-                TextColor3 = Library.TextInactiveColor,
-                Font = Enum.Font.Gotham,
-                TextSize = 12,
-                TextXAlignment = Enum.TextXAlignment.Center,
-                ZIndex = 4
-            })
 
             AttachDescription(CFrame, desc)
 
@@ -1367,7 +1354,6 @@ function Library:CreateWindow(title)
                 expanded = false
             end
 
-            -- Function to create the picker popup
             local function openPicker()
                 if expanded then
                     closePicker()
@@ -1385,11 +1371,11 @@ function Library:CreateWindow(title)
                 local popX = mainAP.X + mainAS.X + 6
                 local popY = rowAP.Y
 
-                -- Popup frame
+                -- Popup frame (no title bar)
                 PickerPop = Create("Frame", {
                     Parent = ScreenGui,
                     Position = UDim2.new(0, popX, 0, popY),
-                    Size = UDim2.new(0, 260, 0, 280),
+                    Size = UDim2.new(0, 220, 0, 250),
                     BackgroundColor3 = Library.SectionColor,
                     BackgroundTransparency = 1,
                     BorderSizePixel = 0,
@@ -1416,34 +1402,19 @@ function Library:CreateWindow(title)
                     ZIndex = 21,
                 })
 
-                -- Title
-                local Title = Create("TextLabel", {
-                    Parent = Container,
-                    Text = "Pick Color: " .. text,
-                    Size = UDim2.new(1, -10, 0, 24),
-                    Position = UDim2.new(0, 5, 0, 0),
-                    BackgroundTransparency = 1,
-                    TextColor3 = Library.TextActiveColor,
-                    Font = Library.Font,
-                    TextSize = 13,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    TextYAlignment = Enum.TextYAlignment.Center,
-                    ZIndex = 22
-                })
-
-                -- Color square (saturation/value)
+                -- Color square (saturation/value) - 180x180
                 local SquareSize = 180
                 local ColorSquare = Create("Frame", {
                     Parent = Container,
                     Size = UDim2.new(0, SquareSize, 0, SquareSize),
-                    Position = UDim2.new(0.5, -SquareSize/2, 0, 30),
+                    Position = UDim2.new(0.5, -SquareSize/2, 0, 0),
                     BackgroundColor3 = HSVToColor3(h, 1, 1),
                     BorderSizePixel = 0,
                     ZIndex = 22
                 })
                 Create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = ColorSquare})
 
-                -- Horizontal gradient for saturation (white -> transparent)
+                -- Saturation gradient (white -> transparent)
                 local SatGrad = Create("Frame", {
                     Parent = ColorSquare,
                     Size = UDim2.new(1, 0, 1, 0),
@@ -1463,7 +1434,7 @@ function Library:CreateWindow(title)
                     })
                 })
 
-                -- Vertical gradient for value (black -> transparent)
+                -- Value gradient (black -> transparent)
                 local ValGrad = Create("Frame", {
                     Parent = ColorSquare,
                     Size = UDim2.new(1, 0, 1, 0),
@@ -1487,7 +1458,7 @@ function Library:CreateWindow(title)
                 local HueSliderBg = Create("Frame", {
                     Parent = Container,
                     Size = UDim2.new(0, SquareSize, 0, 16),
-                    Position = UDim2.new(0.5, -SquareSize/2, 0, 30 + SquareSize + 8),
+                    Position = UDim2.new(0.5, -SquareSize/2, 0, SquareSize + 8),
                     BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                     BorderSizePixel = 0,
                     ZIndex = 22
@@ -1520,7 +1491,7 @@ function Library:CreateWindow(title)
                 local PreviewColor = Create("Frame", {
                     Parent = Container,
                     Size = UDim2.new(0, 40, 0, 40),
-                    Position = UDim2.new(0.5, -20, 0, 30 + SquareSize + 8 + 24),
+                    Position = UDim2.new(0.5, -20, 0, SquareSize + 8 + 24),
                     BackgroundColor3 = currentColor,
                     BorderSizePixel = 0,
                     ZIndex = 22
@@ -1530,7 +1501,7 @@ function Library:CreateWindow(title)
                 local CloseBtn = Create("TextButton", {
                     Parent = Container,
                     Size = UDim2.new(0, 60, 0, 28),
-                    Position = UDim2.new(0.5, -30, 0, 30 + SquareSize + 8 + 24 + 8),
+                    Position = UDim2.new(0.5, -30, 0, SquareSize + 8 + 24 + 8),
                     BackgroundColor3 = Library.ToggleOffColor,
                     Text = "Close",
                     TextColor3 = Library.TextActiveColor,
